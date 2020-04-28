@@ -1,0 +1,17 @@
+# Install GNS3 Server (as root on gns3server via SSH)
+
+cd /tmp
+curl https://raw.githubusercontent.com/GNS3/gns3-server/master/scripts/remote-install.sh > gns3-remote-install.sh
+sudo bash gns3-remote-install.sh --with-openvpn --with-iou --with-i386-repository
+
+
+
+# Check GNS3 Version After Install (To ensure server & client are on same version)
+
+/usr/bin/gns3server -v 
+
+
+
+# Test VPN after connecting
+
+http://172.16.253.1:3080/
