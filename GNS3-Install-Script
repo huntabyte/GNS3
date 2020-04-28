@@ -1,4 +1,4 @@
-# Install GNS3 Server (as root on gns3server via SSH)
+# Install GNS3 Server (As root on Ubuntu VM via SSH)
 
 cd /tmp
 curl https://raw.githubusercontent.com/GNS3/gns3-server/master/scripts/remote-install.sh > gns3-remote-install.sh
