@@ -1,0 +1,91 @@
+############################################
+Create TAP interface:
+--
+
+ip tuntap add name tap0 mode tap
+ifconfig tap0 10.0.0.1/24 up
+sudo ip route add 10.0.0.0/16 via 10.0.0.2
+
+
+############################################
+
+Add routes for networks behind TAP to Linux host & client host
+---
+
+Linux Host:
+
+ip route add 10.0.0.0/16 via 10.0.0.2
+
+
+Windows (host): *If for some reason route will not push from OpenVPN, set it manually like this*
+
+route add 10.0.0.0 mask 255.255.0.0 172.16.253.5 <-- VPN Gateway
+
+############################################
+
+Ensuring TAP is persistent upon reboot
+--
+
+nano /etc/rc.local (this creates file if non existent)
+
+PASTE CONTENTS BETWEEN LINES CONTENTS:
+
+
+
+-----------------COPY BELOW-----------------
+
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+sudo ip tuntap add name tap0 mode tap
+sudo ifconfig tap0 10.0.0.1/24 up
+sudo ip route add 10.0.0.0/16 via 10.0.0.2
+
+exit 0
+
+-----------------STOP ABOVE THIS LINE-----------------
+
+
+Save & Close rc.local (CTRL+O, ENTER, CTRL+X)
+--
+
+Make rc.local executable:
+
+chmod +x /etc/rc.local
+
+############################################
+
+Verify route on windows host after connecting to VPN (CMD/Command Prompt):
+--
+
+route print
+
+############################################
+
+Initial Router Configuration for Connection:
+(Ensure you are in configuration terminal mode prior to pasting configs)
+--
+
+hostname R1
+ip domain name cisco.com
+crypto key generate rsa general-keys modulus 2048
+ip ssh version 2
+username hunter priv 15 secret cisco
+line vty 0 15
+ transport input ssh
+ transport outputssh
+ login local
+int f0/0
+ ip address 10.0.0.2 255.255.255.0
+ no shut
+ip route 0.0.0.0 0.0.0.0 10.0.0.1 
